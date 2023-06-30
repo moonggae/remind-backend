@@ -1,0 +1,3 @@
+interface ContextUser {
+    id: number
+}
