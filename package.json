@@ -18,8 +18,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-esm",
-    "migration:generate": "yarn typeorm migration:generate \"migrations/script\" -d ormconfig.ts --pretty"
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migration:create": "yarn run typeorm migration:create ",
+    "migration:generate": "yarn run typeorm migration:generate ./migrations/generate-table --dataSource ./ormconfig.ts",
+    "migration:run": "yarn run typeorm  migration:run --dataSource ./ormconfig.ts",
+    "migration:revert": "yarn run typeorm migration:revert --dataSource ./ormconfig.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.0",
