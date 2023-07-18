@@ -15,6 +15,6 @@ export class CardTagMap {
     @JoinColumn({name: 'mind_tag_id'})
     tag: MindTag
 
-    @Column('decimal', {nullable: true})
+    @Column('double', {nullable: true})
     indicator?: number
 }
