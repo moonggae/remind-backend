@@ -23,10 +23,10 @@ export class MindCard {
     description: string;
 
     @ApiProperty()
-    @JoinColumn({name: 'image_id'})
-    @OneToOne(() => Image, image => image.mindCard, {nullable: true})
-    imageFile: Image;
+    @ManyToOne(() => Image, (image) => image?.id, { nullable: true })
+    @JoinColumn({ name: 'image_id' })
+    imageFile?: Image | null;
 
     @OneToMany(() => CardTagMap, (tag) => tag.card)
     tags: CardTagMap[]
-} 
+}
