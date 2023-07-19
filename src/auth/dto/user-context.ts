@@ -1,3 +1,3 @@
 interface ContextUser {
-    id: number
+    id: string
 }

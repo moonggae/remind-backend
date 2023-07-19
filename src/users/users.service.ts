@@ -16,7 +16,7 @@ export class UsersService {
     return await savedUser;
   }
 
-  async findOneById(id: number) : Promise<User | null> {
+  async findOneById(id: string) : Promise<User | null> {
     return await this.userRepository.findOneBy(({ id }))
   }
 
@@ -24,7 +24,7 @@ export class UsersService {
     return await this.userRepository.findOneBy(({ uid, loginType }))
   }
 
-  async updateDisplayName(id: number, displayName: string) {
+  async updateDisplayName(id: string, displayName: string) {
     await this.userRepository.update(id, {displayName})
   }
 

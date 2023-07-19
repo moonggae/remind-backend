@@ -10,8 +10,8 @@ enum LOGIN_TYPE {
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @ApiProperty()
     @Column('varchar', {unique: true, nullable: false, length: 255})
