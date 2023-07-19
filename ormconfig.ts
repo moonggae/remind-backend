@@ -18,14 +18,14 @@ export const ormconfig: TypeOrmModuleOptions = {
 }
 
 const dataSource = new DataSource({
-    type: 'mariadb',
-    host: process.env.DB_HOST,
-    port: +process.env.DB_PORT,
-    database: process.env.DB_DATABASE,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
+    type: ormconfig.type,
+    host: ormconfig.host,
+    port: ormconfig.port,
+    database: ormconfig.database,
+    username: ormconfig.username,
+    password: ormconfig.password,
 
-    synchronize: false,
+    synchronize: ormconfig.synchronize,
 
     entities: ['src/**/*.entity.ts'],
 
