@@ -2,8 +2,9 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "t
 import { MindPost } from "./mind-post.entity";
 import { MindCard } from "src/mind/card/entities/mind-card.entity";
 
-enum MIND_POST_CARD_TYPE {
-    MAIN, SUB
+export enum MIND_POST_CARD_TYPE {
+    MAIN = 'MAIN', 
+    SUB = 'SUB'
 }
 
 @Entity('mind_post_card')

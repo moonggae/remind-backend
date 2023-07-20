@@ -15,7 +15,7 @@ export class ImageService {
   }
 
   async findOne(id: string) {
-    return await this.imageRepository.findOneBy({ id: id, deletedAt: null })
+    return await this.imageRepository.findOneBy({ id: id })
   }
 
   findFile(fileName: string) : ReadStream {
@@ -24,6 +24,6 @@ export class ImageService {
   }
 
   async delete(id: string) {
-    await this.imageRepository.softDelete({ id: id, deletedAt: null })
+    await this.imageRepository.softDelete({ id: id })
   }
 }

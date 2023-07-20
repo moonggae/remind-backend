@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { MindPostMemo } from "../../entities/mind-post-memo.entity";
 import { User } from "src/users/entities/user.entity";
+import { MindPostMemoCommentLike } from "../like/entities/mind-post-memo-comment-like.entity";
 
 @Entity('mind_post_memo_comment')
 export class MindPostMemoComment {
@@ -13,6 +14,9 @@ export class MindPostMemoComment {
     @ManyToOne(() => MindPostMemo, { nullable: false })
     @JoinColumn({ name: 'memo_id' })
     memo: MindPostMemo;
+
+    @OneToMany(() => MindPostMemoCommentLike, like => like.comment)
+    likes: MindPostMemoCommentLike[]
 
     @ManyToOne(() => User, { nullable: false })
     @JoinColumn({ name: 'user_id' })

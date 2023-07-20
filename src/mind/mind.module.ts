@@ -37,7 +37,8 @@ import { MindPostMemoCommentLike } from './post/memo/comment/like/entities/mind-
     RouterModule.register([{
       path: 'mind', children: [
         { module: CardModule, path: '/' },
-        { module: TagModule, path: '/' }
+        { module: TagModule, path: '/' },
+        { module: PostModule, path: '/' }
       ]
     }])
   ]

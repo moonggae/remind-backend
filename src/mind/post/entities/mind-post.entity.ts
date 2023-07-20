@@ -9,17 +9,17 @@ export class MindPost {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, { nullable: false })
+    @ManyToOne(() => User, { nullable: false, cascade: true })
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @OneToMany(() => MindPostCard, card => card.post)
+    @OneToMany(() => MindPostCard, card => card.post, { cascade: true })
     cards: MindPostCard[];
 
-    @OneToMany(() => MindPostImage, image => image.post)
+    @OneToMany(() => MindPostImage, image => image.post, { cascade: true })
     images: MindPostImage[];
 
-    @OneToOne(() => MindPostMemo, { nullable: true })
+    @OneToOne(() => MindPostMemo, { nullable: true, cascade: true })
     @JoinColumn({name: 'memo_id'})
     memo: MindPostMemo;
 
