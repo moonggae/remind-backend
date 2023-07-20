@@ -1,9 +1,12 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { MindPost } from "../../entities/mind-post.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { MindPostMemoComment } from "../comment/entities/mind-post-memo-comment.entity";
+import { CreatedAt } from "src/common/entity-base/created_at.abstract";
+import { DeletedAt } from "src/common/entity-base/deleted_at.abstract";
+import { EmptyClass } from "src/common/entity-base/empty-class";
+import { UpdatedAt } from "src/common/entity-base/updated_at.abstract";
 
 @Entity('mind_post_memo')
-export class MindPostMemo {
+export class MindPostMemo extends CreatedAt(UpdatedAt(DeletedAt(EmptyClass))) {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -12,13 +15,4 @@ export class MindPostMemo {
 
     @OneToMany(() => MindPostMemoComment, comment => comment.memo)
     comments: MindPostMemoComment[]
-
-    @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-    createdAt: Date
-
-    @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
-    updatedAt: Date
-
-    @DeleteDateColumn({ type:'timestamp', name: 'deleted_at'})
-    deletedAt: Date
 }

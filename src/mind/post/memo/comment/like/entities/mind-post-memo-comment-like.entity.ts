@@ -1,9 +1,11 @@
 import { User } from "src/users/entities/user.entity";
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MindPostMemoComment } from "../../entities/mind-post-memo-comment.entity";
+import { CreatedAt } from "src/common/entity-base/created_at.abstract";
+import { EmptyClass } from "src/common/entity-base/empty-class";
 
 @Entity({ name: 'mind_post_memo_comment_like' })
-export class MindPostMemoCommentLike {
+export class MindPostMemoCommentLike extends CreatedAt(EmptyClass) {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -14,7 +16,4 @@ export class MindPostMemoCommentLike {
     @ManyToOne(() => MindPostMemoComment, { nullable: false })
     @JoinColumn({ name: 'comment_id' })
     comment: MindPostMemoComment
-
-    @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-    createdAt: Date
 }
