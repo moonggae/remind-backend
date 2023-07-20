@@ -1,13 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, StreamableFile, UseInterceptors, UploadedFiles, ParseFilePipe, ParseFilePipeBuilder, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Param, Res, UseInterceptors, UploadedFiles, BadRequestException, Delete } from '@nestjs/common';
 import { ImageService } from './image.service';
-import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
 import type { Response } from 'express';
-import { Public } from 'src/common/dacorator/public.decorator';
-import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ApiBody } from '@nestjs/swagger';
-import { MulterError, diskStorage } from 'multer';
-import { extname } from 'path';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { existsSync, mkdirSync } from 'fs';
 
 
@@ -58,5 +53,10 @@ export class ImageController {
   async uploadImages(@UploadedFiles() files: Array<Express.Multer.File>) {
     const images = await this.imageService.create(files.map(file => file.filename));
     return images;
+  }
+
+  @Delete(':id')
+  async deleteImage(@Param('id') id: string) {
+    await this.imageService.delete(id);
   }
 }

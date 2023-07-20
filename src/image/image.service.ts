@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
 import { Image } from './entities/image.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
@@ -17,7 +15,7 @@ export class ImageService {
   }
 
   async findOne(id: string) {
-    return await this.imageRepository.findOneBy({id})
+    return await this.imageRepository.findOneBy({ id: id, deletedAt: null })
   }
 
   findFile(fileName: string) : ReadStream {
@@ -25,6 +23,7 @@ export class ImageService {
     return createReadStream(fileDirectoryPath);
   }
 
-
-
+  async delete(id: string) {
+    await this.imageRepository.softDelete({ id: id, deletedAt: null })
+  }
 }
