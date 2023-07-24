@@ -11,6 +11,7 @@ export const ormconfig: TypeOrmModuleOptions = {
     database: process.env.DB_DATABASE,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
+    timezone: 'Asia/Seoul',
     autoLoadEntities: true,
     synchronize: false,
 
@@ -24,6 +25,7 @@ const dataSource = new DataSource({
     database: ormconfig.database,
     username: ormconfig.username,
     password: ormconfig.password,
+    timezone: ormconfig.timezone,
 
     synchronize: ormconfig.synchronize,
 
