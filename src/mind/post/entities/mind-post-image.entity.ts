@@ -14,7 +14,7 @@ export class MindPostImage extends CreatedAt(DeletedAt(EmptyClass)) {
     @JoinColumn({ name: 'image_id' })
     image: Image;
 
-    @ManyToOne(() => MindPost, { nullable: false })
+    @ManyToOne(() => MindPost, { nullable: false, orphanedRowAction: "delete" })
     @JoinColumn({ name: 'post_id' })
     post: MindPost;
 }

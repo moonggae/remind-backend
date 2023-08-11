@@ -12,7 +12,11 @@ export class MindPostCard {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => MindPost, { nullable: false })
+    /*
+    note
+    orphanedRowAction: OneToMany 객체에서 삭제시 delete 설정 필요
+    */
+    @ManyToOne(() => MindPost, { nullable: false, orphanedRowAction: "delete" })
     @JoinColumn({ name: 'post_id' })
     post: MindPost;
 

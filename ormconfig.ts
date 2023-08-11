@@ -14,6 +14,7 @@ export const ormconfig: TypeOrmModuleOptions = {
     timezone: 'Asia/Seoul',
     autoLoadEntities: true,
     synchronize: false,
+    logging: true,
 
     migrationsRun: false,
 }

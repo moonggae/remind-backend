@@ -4,6 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { LOGIN_TYPE } from 'src/common/enum/login-type.enum';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { User } from 'src/users/entities/user.entity';
+import { constnats } from 'src/common/util/constants';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +29,19 @@ export class AuthService {
     if (!user) {
       user = await this.usersService.create({uid, loginType})
     }
+    return this.createJwtToken(user)
+  }
+
+  async refreshJwtToken(refreshToken: string) {
+    const payload: ContextUser = await this.jwtService.verifyAsync(refreshToken, {
+      secret: constnats.jwtSecret
+    })
+
+    const user = await this.usersService.findOneById(payload.id)
+    return this.createJwtToken(user)
+  }
+
+  private async createJwtToken(user: User) {
     const payload : ContextUser = { id: user.id };
     return {
       access_token: await this.jwtService.signAsync(payload),

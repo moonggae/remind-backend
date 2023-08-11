@@ -31,10 +31,13 @@ export class AuthGuard implements CanActivate {
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+      return true;
+    } 
+    catch(e) {
+      const isExpired = `${e}`.includes("jwt expired");
+      if(isExpired) throw new UnauthorizedException("jwt expired")
+      else throw new UnauthorizedException();
     }
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
