@@ -3,7 +3,6 @@ import { CreateMindPostDto } from './dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { MindPost } from './entities/mind-post.entity';
-import { MindCard } from '../card/entities/mind-card.entity';
 import { MindPostCard } from './entities/mind-post-card.entity';
 import { MindPostImage } from './entities/mind-post-image.entity';
 import { MindPostMemo } from './memo/entities/mind-post-memo.entity';
@@ -41,23 +40,76 @@ export class PostService {
         return this.findOne(updatedPost.id);
     }
 
-    async findOne(id: number, userId?: string) {
+    async delete(id: number) {
+        await this.postRepository.softDelete({ id })
+    }
+
+    async findOne(id?: number, userId?: string) {
         return await this.postRepository.findOne({
-            where: [ { id }, { user: { id: userId } } ],
-            relations: [
-                "cards",
-                "cards.card",
-                "cards.card.tags",
-                "cards.card.tags.tag",
-                "cards.card.imageFile",
-                "images",
-                "images.image",
-                "memo",
-                "memo.comments",
-                "memo.comments.user",
-                "memo.comments.likes",
-                "memo.comments.likes.user"
-            ],
+            where: {
+                id: id,
+                user: {
+                    id: userId
+                }
+            },
+            relations: {
+                cards: {
+                    card: {
+                        tags: {
+                            tag: true
+                        },
+                        imageFile: true,
+                    }
+                },
+                images: {
+                    image: true
+                },
+                memo: {
+                    comments: {
+                        user: true,
+                        likes: {
+                            user: true
+                        }
+                    }
+                }
+            },
+            order: { id: 'DESC' }
         })
     }
+
+    async authorize(
+        userId: string, 
+        options?: AuthorizeOptions
+    ): Promise<boolean> {
+        const postEntity: MindPost | null = await this.postRepository.findOne({
+            where: {
+                id: options.postId,
+                user: {
+                    id: userId
+                },
+                memo: {
+                    id: options.memoId,
+                    comments: {
+                        id: options.commentId,
+                        likes: {
+                            id: options.likeId
+                        }
+                    }
+                }
+            }
+        })
+
+        if (postEntity) {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+interface AuthorizeOptions {
+    postId?: number,
+    memoId?: number,
+    commentId?: number,
+    likeId?: number
 }

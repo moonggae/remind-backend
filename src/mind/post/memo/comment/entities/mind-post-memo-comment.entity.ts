@@ -8,7 +8,7 @@ import { DeletedAt } from "src/common/entity-base/deleted_at.abstract";
 import { EmptyClass } from "src/common/entity-base/empty-class";
 
 @Entity('mind_post_memo_comment')
-export class MindPostMemoComment extends CreatedAt(UpdatedAt(DeletedAt(EmptyClass))) {
+export class MindPostMemoComment extends CreatedAt((DeletedAt(EmptyClass))) {
     @PrimaryGeneratedColumn()
     id: number;
 

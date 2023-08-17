@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateLikeDto {
+export class DeleteLikeDto {
     @ApiProperty()
     commentId: number
 }

@@ -14,33 +14,54 @@ import { MindPostMemo } from './post/memo/entities/mind-post-memo.entity';
 import { MindPostMemoComment } from './post/memo/comment/entities/mind-post-memo-comment.entity';
 import { MindPostImage } from './post/entities/mind-post-image.entity';
 import { MindPostMemoCommentLike } from './post/memo/comment/like/entities/mind-post-memo-comment-like.entity';
+import { MemoModule } from './post/memo/memo.module';
+import { CommentModule } from './post/memo/comment/comment.module';
+import { LikeModule } from './post/memo/comment/like/like.module';
 
 @Module({
-  imports: [
-    CardModule, 
-    TagModule,
-    CardTagMapModule,
-    PostModule,
+    imports: [
+        CardModule,
+        TagModule,
+        CardTagMapModule,
+        PostModule,
 
-    TypeOrmModule.forFeature([
-      MindCard, 
-      MindTag,
-      CardTagMap,
-      MindPost,
-      MindPostCard,
-      MindPostImage,
-      MindPostMemo,
-      MindPostMemoComment,
-      MindPostMemoCommentLike
-    ]),
+        TypeOrmModule.forFeature([
+            MindCard,
+            MindTag,
+            CardTagMap,
+            MindPost,
+            MindPostCard,
+            MindPostImage,
+            MindPostMemo,
+            MindPostMemoComment,
+            MindPostMemoCommentLike
+        ]),
 
-    RouterModule.register([{
-      path: 'mind', children: [
-        { module: CardModule, path: '/' },
-        { module: TagModule, path: '/' },
-        { module: PostModule, path: '/' }
-      ]
-    }])
-  ]
+        RouterModule.register([{
+            path: 'mind', children: [
+                { module: CardModule, path: '/' },
+                { module: TagModule, path: '/' },
+                {
+                    module: PostModule,
+                    path: 'post',
+                    children: [
+                        {
+                            module: MemoModule,
+                            path: 'memo',
+                            children: [
+                                {
+                                    module: CommentModule,
+                                    path: 'comment',
+                                    children: [
+                                        { module: LikeModule, path: 'like' }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }])
+    ]
 })
 export class MindModule { }

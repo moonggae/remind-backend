@@ -6,7 +6,7 @@ import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { MindPost } from './entities/mind-post.entity';
 import { UpdateMindPostDto } from './dto/update-post.dto';
 
-@Controller('post')
+@Controller('')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -26,5 +26,23 @@ export class PostController {
     }
 
     return this.postService.update(item.id, updateDto)
+  }
+
+  @ApiBearerAuth('access-token')
+  @Delete(':id')
+  async delete(@CtxUser() user: ContextUser, @Param('id') id: String) {
+    const item = await this.postService.findOne(+id, user.id)
+
+    if(!item) {
+      throw new UnauthorizedException()
+    }
+
+    return this.postService.delete(item.id)
+  }
+
+  @ApiBearerAuth('access-token')
+  @Get('/last')
+  async getLast(@CtxUser() user: ContextUser) {
+    return this.postService.findOne(null, user.id)
   }
 }

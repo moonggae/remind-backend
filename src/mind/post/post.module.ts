@@ -26,6 +26,9 @@ import { MindPostMemo } from './memo/entities/mind-post-memo.entity';
     MindPostMemo,
     MindPostMemoComment,
     MindPostMemoCommentLike
-  ]),]
+  ]),],
+  exports: [
+    PostService
+  ]
 })
 export class PostModule { }
