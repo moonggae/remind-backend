@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Inject, Param, Post, UnauthorizedException, forwardRef } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Patch, Post, UnauthorizedException, forwardRef } from '@nestjs/common';
 import { MemoService } from './memo.service';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { PostService } from '../post.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { CreateMemoDto } from './dto/create-memo.dto';
+import { UpdateMemoDto } from './dto/update-memo.dto';
 
 @Controller('')
 export class MemoController {
@@ -27,5 +28,13 @@ export class MemoController {
         const authorized = await this.postService.authorize(user.id, { memoId: +id })
         if(!authorized) throw new UnauthorizedException()
         return this.memoService.findOne(+id)
+    }
+
+    @ApiBearerAuth('access-token')
+    @Patch(':id')
+    async update(@CtxUser() user: ContextUser, @Param('id') id: string, @Body() updateMemoDto: UpdateMemoDto) {
+        const authorized = await this.postService.authorize(user.id, { memoId: +id })
+        if(!authorized) throw new UnauthorizedException()
+        return this.memoService.update(+id, updateMemoDto.text)
     }
 }

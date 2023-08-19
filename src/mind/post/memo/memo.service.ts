@@ -20,6 +20,15 @@ export class MemoService {
         return await this.findOne(createdMemo.id)
     }
 
+    async update(id: number, text: string) {
+        const updatedMemo = await this.memoRepository.save({
+            id: id,
+            text: text
+        })
+
+        return await this.findOne(updatedMemo.id)
+    }
+
     async findOne(id: number) {
         return this.memoRepository.findOne({
             where: {
