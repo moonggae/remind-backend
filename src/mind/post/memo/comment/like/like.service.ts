@@ -20,14 +20,9 @@ export class LikeService {
         return await this.findOne(createdLike.id)
     }
 
-    async delete(commentId: number, userId: string) {
+    async delete(id: number) {
         await this.likeRepository.delete({
-            user: {
-                id: userId
-            },
-            comment: {
-                id: commentId
-            }
+            id: id
         })
     }
 

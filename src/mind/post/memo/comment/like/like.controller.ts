@@ -4,7 +4,6 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { PostService } from 'src/mind/post/post.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { DeleteLikeDto } from './dto/delete-like.dto';
 
 @Controller('')
 export class LikeController {
@@ -31,10 +30,10 @@ export class LikeController {
     }
 
     @ApiBearerAuth('access-token')
-    @Delete()
-    async delete(@CtxUser() user: ContextUser, @Body() deleteLikeDto: DeleteLikeDto) {
-        const authorized = this.postService.authorize(user.id, { commentId: deleteLikeDto.commentId })
+    @Delete(':id')
+    async delete(@CtxUser() user: ContextUser, @Param('id') id: string) {
+        const authorized = this.postService.authorize(user.id, { likeId: +id })
         if(!authorized) throw new UnauthorizedException()
-        return await this.likeService.delete(deleteLikeDto.commentId, user.id)
+        return await this.likeService.delete(+id)
     }
 }
