@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post, UnauthorizedException, forwardRef } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, UnauthorizedException, forwardRef } from '@nestjs/common';
 import { MemoService } from './memo.service';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { PostService } from '../post.service';
@@ -36,5 +36,13 @@ export class MemoController {
         const authorized = await this.postService.authorize(user.id, { memoId: +id })
         if(!authorized) throw new UnauthorizedException()
         return this.memoService.update(+id, updateMemoDto.text)
+    }
+
+    @ApiBearerAuth('access-token')
+    @Delete(':id')
+    async delete(@CtxUser() user: ContextUser, @Param('id') id: string) {
+        const authorized = await this.postService.authorize(user.id, { memoId: +id })
+        if(!authorized) throw new UnauthorizedException()
+        await this.memoService.delete(+id)
     }
 }

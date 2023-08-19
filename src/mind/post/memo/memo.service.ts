@@ -30,7 +30,7 @@ export class MemoService {
     }
 
     async findOne(id: number) {
-        return this.memoRepository.findOne({
+        return await this.memoRepository.findOne({
             where: {
                 id: id
             },
@@ -43,5 +43,9 @@ export class MemoService {
                 },
             }
         })
+    }
+
+    async delete(id: number) {
+        await this.memoRepository.softDelete({ id: id })
     }
 }
