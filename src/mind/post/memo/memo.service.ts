@@ -9,6 +9,17 @@ import { Repository } from 'typeorm';
 export class MemoService {
     constructor(@InjectRepository(MindPostMemo) private memoRepository: Repository<MindPostMemo>) {}
 
+    async create(postId: number, text: string) {
+        const createdMemo = await this.memoRepository.save({
+            text: text,
+            post: {
+                id: postId
+            }
+        })
+
+        return await this.findOne(createdMemo.id)
+    }
+
     async findOne(id: number) {
         return this.memoRepository.findOne({
             where: {
