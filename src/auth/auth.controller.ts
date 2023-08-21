@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin.dto';
 import { Public } from 'src/common/dacorator/public.decorator';
@@ -27,9 +27,10 @@ export class AuthController {
 
   @Public()
   @Post('/refresh')
-  async refreshToken(request: Request) {
+  async refreshToken(@Req() request: Request) {
+    console.log(request)
     const splitedAuthorization = request.headers.authorization.split(' ');
-    if(splitedAuthorization[0].toLowerCase() == 'Bearer') {
+    if(splitedAuthorization[0].toLowerCase() == 'bearer') {
       return this.authService.refreshJwtToken(splitedAuthorization[1])
     } else {
       throw new BadRequestException()
