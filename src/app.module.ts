@@ -12,6 +12,7 @@ import { MindModule } from './mind/mind.module';
 import { ImageModule } from './image/image.module';
 import { ormconfig } from 'ormconfig';
 import { DelayMiddleware } from './common/util/DelayMiddleware';
+import { LoggerMiddleware } from './common/logger.midleware';
 
 
 @Module({
@@ -30,8 +31,10 @@ import { DelayMiddleware } from './common/util/DelayMiddleware';
 export class AppModule implements NestModule {
   constructor(private dataSource: DataSource) { }
   configure(consumer: MiddlewareConsumer) {
-    // consumer
+    consumer
     // .apply(DelayMiddleware)
     // .forRoutes('')
+    .apply(LoggerMiddleware)
+    .forRoutes('*')
   }
 }
