@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +11,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { MindModule } from './mind/mind.module';
 import { ImageModule } from './image/image.module';
 import { ormconfig } from 'ormconfig';
+import { DelayMiddleware } from './common/util/DelayMiddleware';
 
 
 @Module({
@@ -26,6 +27,11 @@ import { ormconfig } from 'ormconfig';
   controllers: [AppController],
   providers: [AppService, {provide: APP_GUARD, useClass: AuthGuard}],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   constructor(private dataSource: DataSource) { }
+  configure(consumer: MiddlewareConsumer) {
+    // consumer
+    // .apply(DelayMiddleware)
+    // .forRoutes('')
+  }
 }
