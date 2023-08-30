@@ -13,12 +13,17 @@ import { ImageModule } from './image/image.module';
 import { ormconfig } from 'ormconfig';
 import { DelayMiddleware } from './common/util/DelayMiddleware';
 import { LoggerMiddleware } from './common/logger.midleware';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(ormconfig),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'static')
+    }),
 
     UsersModule,
     AuthModule,
