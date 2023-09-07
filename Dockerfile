@@ -10,5 +10,5 @@ FROM node:18.17.1
 WORKDIR /usr/src/app
 COPY --from=builder /app ./
 
-EXPOSE 3000
+EXPOSE 443
 CMD yarn start:prod

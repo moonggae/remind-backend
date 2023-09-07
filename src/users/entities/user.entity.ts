@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import { CreatedAt } from "src/common/entity-base/created_at.abstract";
-import { EmptyClass } from "src/common/entity-base/empty-class";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Image } from "src/image/entities/image.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 enum LOGIN_TYPE {
     KAKAO = 'KAKAO',
@@ -32,4 +31,9 @@ export class User {
     @ApiProperty({ nullable: true })
     @Column('varchar', { nullable: true, length: 10 })
     displayName?: string;
+
+    @ApiProperty()
+    @ManyToOne(() => Image, (image) => image?.id, { nullable: true })
+    @JoinColumn({ name: 'profile_image_id' })
+    profileImage?: Image;
 }

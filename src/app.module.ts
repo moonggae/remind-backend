@@ -22,7 +22,12 @@ import { join } from 'path';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'static')
+      rootPath: join(__dirname, '..', '..', 'static'),
+      renderPath: '.well-known',
+      serveStaticOptions: {
+        index: false,
+        redirect: false
+      }
     }),
 
     UsersModule,

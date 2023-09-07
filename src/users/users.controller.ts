@@ -25,8 +25,6 @@ export class UsersController {
     return result;
   }
 
-
-
   @ApiBearerAuth('access-token')
   @Patch('displayName')
   async updateDisplayName(@CtxUser() user: ContextUser, @Body() UpdateUserDisplayNameDto: UpdateUserDisplayNameDto) {
