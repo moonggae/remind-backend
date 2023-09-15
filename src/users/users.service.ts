@@ -36,6 +36,21 @@ export class UsersService {
         await this.userRepository.save({ id: id, profileImage: { id: imageId } })
     }
 
+    async createNewInviteCode(): Promise<string> {
+        let isCodeConflit = false;
+        do {
+            const randomCode = Math.random().toString(10).substring(2, 8)
+            const isCodeConflit = await this.userRepository.exist({
+                where: {
+                    inviteCode: randomCode
+                }
+            });
+            if(isCodeConflit == false) {
+                return randomCode
+            }
+        } while (isCodeConflit);
+    }
+
     // remove(id: number) {
     //   return `This action removes a #${id} user`;
     // }

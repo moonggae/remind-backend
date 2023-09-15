@@ -36,4 +36,8 @@ export class User {
     @ManyToOne(() => Image, (image) => image?.id, { nullable: true })
     @JoinColumn({ name: 'profile_image_id' })
     profileImage?: Image;
+
+    @ApiProperty()
+    @Column('char', { nullable: false, length: 6 })
+    inviteCode: string;
 }

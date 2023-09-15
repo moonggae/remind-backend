@@ -34,7 +34,8 @@ export class UsersController {
         const userEntity = await this.usersService.findOneById(user.id)
         return {
             displayName: userEntity.displayName,
-            profileImage: userEntity.profileImage
+            profileImage: userEntity.profileImage,
+            inviteCode: userEntity.inviteCode
         }
     }
 
