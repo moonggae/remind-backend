@@ -95,6 +95,10 @@ export class FriendService {
         return requests.find(request => request.id === requestId)
     }
 
+    async deleteRequest(requestId: number) {
+        await this.requestRepository.softDelete({ id: requestId })
+    }
+
     async acceptRequest(requestId: number) {
         await this.friendRepository.save({
             acceptedFriendRequest: { id: requestId }

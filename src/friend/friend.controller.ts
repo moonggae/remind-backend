@@ -93,6 +93,17 @@ export class FriendController {
     }
 
     @ApiBearerAuth('access-token')
+    @Delete('request/:requestId')
+    async deleteMyFriendRequest(@CtxUser() user: ContextUser, @Param('requestId') requestId: string) {
+        const requests = await this.friendService.findRequests(user.id);
+        const existsRequest = requests.some(request => request.id == +requestId)
+        if(!existsRequest) {
+            throw new NotFoundException();
+        }
+        await this.friendService.deleteRequest(+requestId)
+    }
+
+    @ApiBearerAuth('access-token')
     @Post('accept/:requestId')
     async acceptFriendRequest(@CtxUser() user: ContextUser, @Param('requestId') requestId: string) {
         const request: FriendRequest = await this.friendService.findValidReceivedRequests(user.id, +requestId)
