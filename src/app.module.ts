@@ -15,6 +15,7 @@ import { DelayMiddleware } from './common/util/DelayMiddleware';
 import { LoggerMiddleware } from './common/logger.midleware';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { FriendModule } from './friend/friend.module';
 
 
 @Module({
@@ -34,6 +35,7 @@ import { join } from 'path';
     AuthModule,
     MindModule,
     ImageModule,
+    FriendModule,
   ],
   controllers: [AppController],
   providers: [AppService, {provide: APP_GUARD, useClass: AuthGuard}],

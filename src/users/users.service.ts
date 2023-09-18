@@ -28,6 +28,17 @@ export class UsersService {
         return await this.userRepository.findOneBy(({ uid, loginType }))
     }
 
+    async findByInviteCode(inviteCode: string) {
+        return await this.userRepository.findOne({
+            where: {
+                inviteCode: inviteCode
+            },
+            relations: {
+                profileImage: true
+            }
+        })
+    }
+
     async updateDisplayName(id: string, displayName: string) {
         await this.userRepository.update(id, { displayName })
     }
