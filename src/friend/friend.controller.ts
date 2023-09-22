@@ -114,7 +114,7 @@ export class FriendController {
     }
 
     @ApiBearerAuth('access-token')
-    @Delete('deny/:requestId')
+    @Post('deny/:requestId')
     async denyFriendRequest(@CtxUser() user: ContextUser, @Param('requestId') requestId: string) {
         const request: FriendRequest = await this.friendService.findValidReceivedRequests(user.id, +requestId)
         if(!request) {
