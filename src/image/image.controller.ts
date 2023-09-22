@@ -36,7 +36,7 @@ export class ImageController {
       },
       filename: (req, file, callback) => {
         const uniqueSuffix = Date.now();
-        const filename = `${uniqueSuffix}_${file.originalname}`
+        const filename = `${uniqueSuffix}_${file.originalname}`.substring(0, 40)
         callback(null, filename)
       }
     }),
