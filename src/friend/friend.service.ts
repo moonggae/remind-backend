@@ -1,16 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { FriendRequest } from './entities/friend.request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Friend } from './entities/friend.entity';
 import { User } from 'src/users/entities/user.entity';
+import { AuthorizeOptions } from 'src/auth/entities/authorize-options';
+import { PostService } from 'src/mind/post/post.service';
 
 @Injectable()
 export class FriendService {
     constructor(
         @InjectRepository(FriendRequest) private requestRepository: Repository<FriendRequest>,
-        @InjectRepository(Friend) private friendRepository: Repository<Friend>
+        @InjectRepository(Friend) private friendRepository: Repository<Friend>,
+        private readonly postService: PostService,
     ) {}
+
+    async postAuthorize(userId: string, options?: AuthorizeOptions): Promise<boolean> {
+        const friend = await this.findFriend(userId)
+        return await this.postService.authorize(friend.id, options)
+    }
+
+    async findFriend(userId: string): Promise<User | null> {
+        const friends = await this.findFriends(userId)
+        if(friends.length < 1) {
+            return null
+        } else {
+            return friends[0]
+        }
+    }
 
     async findFriends(userId: string): Promise<User[]> {
         const foundFirendEntities = await this.friendRepository.find({
@@ -19,15 +36,17 @@ export class FriendService {
                     acceptedFriendRequest: {
                         receiveUser: {
                             id: userId
-                        }
-                    }
+                        },
+                    },
+                    deletedAt: IsNull()
                 },
                 {
                     acceptedFriendRequest: {
                         requestUser: {
                             id: userId
-                        }
-                    }
+                        },
+                    },
+                    deletedAt: IsNull()
                 }
             ],
             relations: {
@@ -39,11 +58,12 @@ export class FriendService {
                         profileImage: true
                     },
                 }
-            }
+            },
+            withDeleted: true
         })
 
         const friendUsers = foundFirendEntities.map(friendEntity => {
-            if(friendEntity.acceptedFriendRequest.receiveUser.uid != userId) {
+            if(friendEntity.acceptedFriendRequest.receiveUser.id != userId) {
                 return friendEntity.acceptedFriendRequest.receiveUser
             } else {
                 return friendEntity.acceptedFriendRequest.requestUser

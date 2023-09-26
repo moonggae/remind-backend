@@ -5,13 +5,16 @@ import { PostService } from '../post.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { CreateMemoDto } from './dto/create-memo.dto';
 import { UpdateMemoDto } from './dto/update-memo.dto';
+import { FriendService } from 'src/friend/friend.service';
+import { identity } from 'rxjs';
 
 @Controller('')
 export class MemoController {
     constructor(
         private readonly memoService: MemoService,
         @Inject(forwardRef(() => PostService))
-        private readonly postService: PostService
+        private readonly postService: PostService,
+        private readonly friendService: FriendService
     ) { }
 
     @ApiBearerAuth('access-token')
@@ -25,15 +28,20 @@ export class MemoController {
     @ApiBearerAuth('access-token')
     @Get(':id')
     async findOne(@CtxUser() user: ContextUser, @Param('id') id: string) {
-        const authorized = await this.postService.authorize(user.id, { memoId: +id })
-        if(!authorized) throw new UnauthorizedException()
+        let authorized = await this.postService.authorize(user.id, { memoId: +id })
+        if(!authorized) {
+            authorized = await this.friendService.postAuthorize(user.id, { memoId: +id })
+        }
+        if(!authorized) {
+            throw new UnauthorizedException()
+        }
         return this.memoService.findOne(+id)
     }
 
     @ApiBearerAuth('access-token')
     @Patch(':id')
     async update(@CtxUser() user: ContextUser, @Param('id') id: string, @Body() updateMemoDto: UpdateMemoDto) {
-        const authorized = await this.postService.authorize(user.id, { memoId: +id })
+        let authorized = await this.postService.authorize(user.id, { memoId: +id })
         if(!authorized) throw new UnauthorizedException()
         return this.memoService.update(+id, updateMemoDto.text)
     }

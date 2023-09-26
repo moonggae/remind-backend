@@ -8,6 +8,7 @@ import { MindPostImage } from './entities/mind-post-image.entity';
 import { MindPostMemo } from './memo/entities/mind-post-memo.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UpdateMindPostDto } from './dto/update-post.dto';
+import { AuthorizeOptions } from 'src/auth/entities/authorize-options';
 
 @Injectable()
 export class PostService {
@@ -78,7 +79,7 @@ export class PostService {
     }
 
     async authorize(
-        userId: string, 
+        userId: string,
         options?: AuthorizeOptions
     ): Promise<boolean> {
         const postEntity: MindPost | null = await this.postRepository.findOne({
@@ -105,11 +106,4 @@ export class PostService {
             return false
         }
     }
-}
-
-interface AuthorizeOptions {
-    postId?: number,
-    memoId?: number,
-    commentId?: number,
-    likeId?: number
 }

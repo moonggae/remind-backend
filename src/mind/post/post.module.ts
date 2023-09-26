@@ -12,23 +12,27 @@ import { MindPost } from './entities/mind-post.entity';
 import { MindPostMemoComment } from './memo/comment/entities/mind-post-memo-comment.entity';
 import { MindPostMemoCommentLike } from './memo/comment/like/entities/mind-post-memo-comment-like.entity';
 import { MindPostMemo } from './memo/entities/mind-post-memo.entity';
+import { FriendModule } from 'src/friend/friend.module';
 
 @Module({
-  controllers: [PostController],
-  providers: [PostService],
-  imports: [MemoModule, TypeOrmModule.forFeature([
-    MindCard,
-    MindTag,
-    CardTagMap,
-    MindPost,
-    MindPostCard,
-    MindPostImage,
-    MindPostMemo,
-    MindPostMemoComment,
-    MindPostMemoCommentLike
-  ]),],
-  exports: [
-    PostService
-  ]
+    controllers: [PostController],
+    providers: [PostService],
+    imports: [
+        MemoModule, TypeOrmModule.forFeature([
+            MindCard,
+            MindTag,
+            CardTagMap,
+            MindPost,
+            MindPostCard,
+            MindPostImage,
+            MindPostMemo,
+            MindPostMemoComment,
+            MindPostMemoCommentLike
+        ]),
+        FriendModule
+    ],
+    exports: [
+        PostService
+    ]
 })
 export class PostModule { }

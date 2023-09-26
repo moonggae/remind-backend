@@ -4,6 +4,7 @@ import { LikeController } from './like.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MindPostMemoCommentLike } from './entities/mind-post-memo-comment-like.entity';
 import { PostModule } from 'src/mind/post/post.module';
+import { FriendModule } from 'src/friend/friend.module';
 
 @Module({
     controllers: [LikeController],
@@ -13,7 +14,8 @@ import { PostModule } from 'src/mind/post/post.module';
             MindPostMemoCommentLike
         ]),
 
-        forwardRef(() => PostModule)
+        forwardRef(() => PostModule),
+        FriendModule
     ]
 })
 export class LikeModule { }

@@ -18,6 +18,18 @@ export class FriendController {
 
     @ApiBearerAuth('access-token')
     @ApiResponse({ type: ReadUserProfileDto })
+    @Get('')
+    async findFriend(@CtxUser() user: ContextUser): Promise<ReadUserProfileDto> {
+        const friend = await this.friendService.findFriend(user.id)
+        return {
+            inviteCode: friend.inviteCode,
+            displayName: friend.displayName,
+            profileImage: friend.profileImage
+        }
+    }
+
+    @ApiBearerAuth('access-token')
+    @ApiResponse({ type: ReadUserProfileDto })
     @Get('user/:inviteCode')
     async findUserProfileByInviteCode(@Param('inviteCode') inviteCode: string): Promise<ReadUserProfileDto> {
         const user = await this.userService.findByInviteCode(inviteCode)

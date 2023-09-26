@@ -5,44 +5,55 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { MindPost } from './entities/mind-post.entity';
 import { UpdateMindPostDto } from './dto/update-post.dto';
+import { FriendService } from 'src/friend/friend.service';
 
 @Controller('')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+    constructor(
+        private readonly postService: PostService,
+        private readonly friendService: FriendService
+    ) { }
 
-  @ApiBearerAuth('access-token')
-  @Post()
-  async create(@CtxUser() user: ContextUser, @Body() createDto: CreateMindPostDto): Promise<MindPost> {
-    return await this.postService.create(user.id, createDto);
-  }
-
-  @ApiBearerAuth('access-token')
-  @Put(':id')
-  async update(@CtxUser() user: ContextUser, @Param('id') id: String, @Body() updateDto: UpdateMindPostDto): Promise<MindPost> {
-    const item = await this.postService.findOne(+id, user.id)
-
-    if(!item) {
-      throw new UnauthorizedException()
+    @ApiBearerAuth('access-token')
+    @Post()
+    async create(@CtxUser() user: ContextUser, @Body() createDto: CreateMindPostDto): Promise<MindPost> {
+        return await this.postService.create(user.id, createDto);
     }
 
-    return this.postService.update(item.id, updateDto)
-  }
+    @ApiBearerAuth('access-token')
+    @Put(':id')
+    async update(@CtxUser() user: ContextUser, @Param('id') id: String, @Body() updateDto: UpdateMindPostDto): Promise<MindPost> {
+        const item = await this.postService.findOne(+id, user.id)
 
-  @ApiBearerAuth('access-token')
-  @Delete(':id')
-  async delete(@CtxUser() user: ContextUser, @Param('id') id: String) {
-    const item = await this.postService.findOne(+id, user.id)
+        if (!item) {
+            throw new UnauthorizedException()
+        }
 
-    if(!item) {
-      throw new UnauthorizedException()
+        return this.postService.update(item.id, updateDto)
     }
 
-    return this.postService.delete(item.id)
-  }
+    @ApiBearerAuth('access-token')
+    @Delete(':id')
+    async delete(@CtxUser() user: ContextUser, @Param('id') id: String) {
+        const item = await this.postService.findOne(+id, user.id)
 
-  @ApiBearerAuth('access-token')
-  @Get('/last')
-  async getLast(@CtxUser() user: ContextUser) {
-    return this.postService.findOne(null, user.id)
-  }
+        if (!item) {
+            throw new UnauthorizedException()
+        }
+
+        return this.postService.delete(item.id)
+    }
+
+    @ApiBearerAuth('access-token')
+    @Get('/last/friend')
+    async getLastFriendPost(@CtxUser() user: ContextUser) {
+        const friend = await this.friendService.findFriend(user.id)
+        return this.postService.findOne(null, friend.id)
+    }
+
+    @ApiBearerAuth('access-token')
+    @Get('/last')
+    async getLast(@CtxUser() user: ContextUser) {
+        return this.postService.findOne(null, user.id)
+    }
 }

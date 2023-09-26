@@ -4,19 +4,22 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { PostService } from 'src/mind/post/post.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { FriendService } from 'src/friend/friend.service';
 
 @Controller('')
 export class LikeController {
     constructor(
         private readonly likeService: LikeService,
         @Inject(forwardRef(() => PostService))
-        private readonly postService: PostService
+        private readonly postService: PostService,
+        private readonly friendService: FriendService
     ) { }
 
     @ApiBearerAuth('access-token')
     @Post()
     async create(@CtxUser() user: ContextUser, @Body() createLikeDto: CreateLikeDto) {
-        const authorized = this.postService.authorize(user.id, { commentId: createLikeDto.commentId })
+        let authorized = await this.postService.authorize(user.id, { commentId: createLikeDto.commentId })
+        if(!authorized) authorized = await this.friendService.postAuthorize(user.id, { commentId: createLikeDto.commentId })
         if(!authorized) throw new UnauthorizedException()
         try {
             return await this.likeService.create(createLikeDto.commentId, user.id)    
