@@ -1,7 +1,7 @@
 import { CreatedAt } from "src/common/entity-base/created_at.abstract";
 import { EmptyClass } from "src/common/entity-base/empty-class";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryColumnCannotBeNullableError, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.entity";
+import { User } from "../../users/entities/user.entity";
 
 @Entity('user_fcm_token')
 export class FCMToken extends CreatedAt(EmptyClass) {

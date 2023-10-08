@@ -9,7 +9,7 @@ import { PostModule } from 'src/mind/post/post.module';
 
 @Module({
     imports: [
-        UsersModule,
+        forwardRef(() => UsersModule),
         forwardRef(() => PostModule),
         TypeOrmModule.forFeature([FriendRequest, Friend])
     ],

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { LOGIN_TYPE } from 'src/common/enum/login-type.enum';
-import { FCMToken } from './entities/fcm-token.entity';
+import { FCMToken } from '../notification/entities/fcm-token.entity';
 
 @Injectable()
 export class UsersService {

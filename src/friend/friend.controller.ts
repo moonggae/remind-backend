@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, BadRequestException, ConflictException, Inject, forwardRef } from '@nestjs/common';
 import { FriendService } from './friend.service';
 import { UsersService } from 'src/users/users.service';
 import { ReadUserProfileDto } from 'src/users/dto/read-user-profile.dto';
@@ -12,7 +12,10 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 @Controller('friend')
 export class FriendController {
     constructor(
+        @Inject(forwardRef(() => FriendService))
         private readonly friendService: FriendService,
+
+        @Inject(forwardRef(() => UsersService))
         private readonly userService: UsersService
     ) { }
 

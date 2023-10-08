@@ -16,6 +16,7 @@ import { LoggerMiddleware } from './common/logger.midleware';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FriendModule } from './friend/friend.module';
+import { NotificationModule } from './notification/notification.module';
 
 
 @Module({
@@ -36,6 +37,7 @@ import { FriendModule } from './friend/friend.module';
     MindModule,
     ImageModule,
     FriendModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, {provide: APP_GUARD, useClass: AuthGuard}],

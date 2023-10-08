@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { FriendRequest } from './entities/friend.request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
@@ -12,6 +12,7 @@ export class FriendService {
     constructor(
         @InjectRepository(FriendRequest) private requestRepository: Repository<FriendRequest>,
         @InjectRepository(Friend) private friendRepository: Repository<Friend>,
+        @Inject(forwardRef(() => PostService))
         private readonly postService: PostService,
     ) {}
 
