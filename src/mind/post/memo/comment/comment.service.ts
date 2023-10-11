@@ -32,6 +32,7 @@ export class CommentService {
                     user: true,
                 },
                 user: true,
+                memo: true
             }
         })
     }

@@ -6,6 +6,7 @@ import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { PostService } from '../../post.service';
 import { FriendService } from 'src/friend/friend.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Controller('')
 export class CommentController {
@@ -13,7 +14,8 @@ export class CommentController {
         private readonly commentService: CommentService,
         @Inject(forwardRef(() => PostService))
         private readonly postService: PostService,
-        private readonly friendService: FriendService
+        private readonly friendService: FriendService,
+        private readonly notificationService: NotificationService
     ) { }
 
     @ApiBearerAuth('access-token')
@@ -22,6 +24,13 @@ export class CommentController {
         let authorized = await this.postService.authorize(user.id, { memoId: createCommentDto.memoId })
         if (!authorized) authorized = await this.friendService.postAuthorize(user.id, { memoId: createCommentDto.memoId })
         if (!authorized) throw new UnauthorizedException()
-        return this.commentService.create(user.id, createCommentDto.memoId, createCommentDto.text)
+        const comment = await this.commentService.create(user.id, createCommentDto.memoId, createCommentDto.text)
+        this.notificationService.sendNotificationToFriend(user.id, {
+            text: `${user.displayName ? `${user.displayName}님이` : "친구가" } 새로운 메모 코멘트를 남겼어요.`,
+            type: "MEMO.COMMENT",
+            targetId: `${comment.memo.id}`
+        })
+        console.log(comment)
+        return comment
     }
 }
