@@ -4,4 +4,5 @@ export type NotificationContentType =
     "MEMO.UPDATE" | 
     "MEMO.COMMENT" | 
     "FRIEND.REQUEST" | 
-    "FRIEND.ACCEPT"
+    "FRIEND.ACCEPT" |
+    "MIND.REQUEST" 

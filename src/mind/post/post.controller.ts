@@ -65,4 +65,15 @@ export class PostController {
     async getLast(@CtxUser() user: ContextUser) {
         return this.postService.findOne(null, user.id)
     }
+
+    @ApiBearerAuth('access-token')
+    @Post('/request/friend')
+    async requestFriendMind(@CtxUser() user: ContextUser) {
+        // todo : 일정 시간 텀으로 요청 or exception 뱉기
+        this.notificationService.sendNotificationToFriend(user.id, {
+            title: "감정 묻기",
+            text: `${user.displayName}님이 현재 감정을 물어봤어요.`,
+            type: "MIND.REQUEST"
+        })
+    }
 }

@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, forwardRef, UnauthorizedException } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { PostService } from '../../post.service';
@@ -30,7 +29,6 @@ export class CommentController {
             type: "MEMO.COMMENT",
             targetId: `${comment.memo.id}`
         })
-        console.log(comment)
         return comment
     }
 }
