@@ -43,7 +43,7 @@ export class AuthService {
     }
 
     private async createJwtToken(user: User) {
-        const payload: ContextUser = { id: user.id };
+        const payload: ContextUser = { id: user.id, displayName: user.displayName };
         return {
             access_token: await this.jwtService.signAsync(payload),
             refresh_token: await this.jwtService.signAsync(payload, { expiresIn: "7d" })

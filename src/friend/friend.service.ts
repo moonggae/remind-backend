@@ -91,7 +91,8 @@ export class FriendService {
             relations: {
                 requestUser: {
                     profileImage: true
-                }
+                },
+                receiveUser: true
             }
         })
     }

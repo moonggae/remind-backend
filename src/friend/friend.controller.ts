@@ -7,6 +7,7 @@ import { FriendRequest } from './entities/friend.request.entity';
 import { ReadReceivedFriendRequestDto } from './dto/read-received-friend-request.dto';
 import { ReadMyFriendRequestDto } from './dto/read-my-friend-request.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { NotificationService } from 'src/notification/notification.service';
 
 @ApiTags('Friend')
 @Controller('friend')
@@ -16,7 +17,9 @@ export class FriendController {
         private readonly friendService: FriendService,
 
         @Inject(forwardRef(() => UsersService))
-        private readonly userService: UsersService
+        private readonly userService: UsersService,
+
+        private readonly notificationService: NotificationService
     ) { }
 
     @ApiBearerAuth('access-token')
@@ -71,6 +74,11 @@ export class FriendController {
             user.id,
             receiveUser.id
         )
+
+        this.notificationService.sendNotificationToUser(receiveUser.id, {
+            text: `${user.displayName}님이 친구 요청을 보냈어요.`,
+            type: "FRIEND.REQUEST"
+        })
     }
 
     @ApiBearerAuth('access-token')
@@ -126,6 +134,11 @@ export class FriendController {
             throw new BadRequestException();
         }
         await this.friendService.acceptRequest(+requestId);
+        
+        this.notificationService.sendNotificationToUser(request.requestUser.id, {
+            text: `${user.displayName}님이 친구 요청을 수락했어요.`,
+            type: "FRIEND.ACCEPT"
+        })
     }
 
     @ApiBearerAuth('access-token')

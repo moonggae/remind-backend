@@ -5,7 +5,7 @@ import * as path from 'path';
 import { FCMToken } from 'src/notification/entities/fcm-token.entity';
 import { Repository } from 'typeorm';
 import * as admin from 'firebase-admin';
-import { NotificationOptions } from 'src/notification/entities/notification-options';
+import { NotificationOptions } from 'src/notification/models/notification-options';
 import { FriendService } from 'src/friend/friend.service';
 
 @Injectable()
@@ -28,15 +28,16 @@ export class NotificationService implements OnModuleInit {
     async sendNotification(tokens: string[], options?: NotificationOptions) {
         const message: MulticastMessage = {
             tokens: tokens,
-            notification: {
-                title: options?.title ?? "",
-                body: options?.text ?? "",
-            },
-            data: {
-                route: options?.route ?? "",
-                id: options?.id ?? ""
-            }
+            notification: {},
+            data: {}
         }
+
+        if(options?.title) message["notification"]["title"] = options.title
+        if(options?.text) message["notification"]["body"] = options.text
+        if(options?.type) message["data"]["type"] = options.type
+        if(options?.targetId) message["data"]["targetId"] = options.targetId
+
+
 
         const result = await this.app.messaging().sendEachForMulticast(message)
         result.responses.forEach((res, index) => {
@@ -46,7 +47,7 @@ export class NotificationService implements OnModuleInit {
         })
     }
 
-    private async deleteToken(token) {
+    async deleteToken(token) {
         await this.fcmRepository.delete({
             token: token
         })
@@ -54,14 +55,28 @@ export class NotificationService implements OnModuleInit {
 
     async sendNotificationToFriend(userId: string, options?: NotificationOptions) {
         const friend = await this.friendService.findFriend(userId)
-        const friendTokens = await this.findTokensByUserId(friend.id)
+        if(!friend) return;
+        
+        this.sendNotificationToUser(friend.id, options)
+    }
 
-        this.sendNotification(friendTokens.map(fcm => fcm.token), options)
+    async sendNotificationToUser(userId: string, options?: NotificationOptions) {
+        const userTokends = await this.findTokensByUserId(userId)
+        if(userTokends.length < 1) return;
+
+        await this.sendNotification(userTokends.map(fcm => fcm.token), options)
     }
 
     async findOneToken(token: string): Promise<FCMToken | undefined> {
         try {
-            return await this.fcmRepository.findOneBy({ token })
+            return await this.fcmRepository.findOne({ 
+                where: {
+                    token: token
+                },
+                relations: {
+                    user: true
+                }
+            })
         } catch (error) {
             console.log(error)
             return null

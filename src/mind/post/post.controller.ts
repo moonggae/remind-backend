@@ -6,18 +6,27 @@ import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { MindPost } from './entities/mind-post.entity';
 import { UpdateMindPostDto } from './dto/update-post.dto';
 import { FriendService } from 'src/friend/friend.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Controller('')
 export class PostController {
     constructor(
         private readonly postService: PostService,
-        private readonly friendService: FriendService
+        private readonly friendService: FriendService,
+        private readonly notificationService: NotificationService
     ) { }
 
     @ApiBearerAuth('access-token')
     @Post()
     async create(@CtxUser() user: ContextUser, @Body() createDto: CreateMindPostDto): Promise<MindPost> {
-        return await this.postService.create(user.id, createDto);
+        const post = await this.postService.create(user.id, createDto)
+        this.notificationService.sendNotificationToFriend(user.id, {
+            text: `${user.displayName ? `${user.displayName}님이` : "친구가" } 새로운 감정을 등록했어요.`,
+            type: "MIND.POST",
+            targetId: `${post.id}`
+        })
+
+        return post
     }
 
     @ApiBearerAuth('access-token')

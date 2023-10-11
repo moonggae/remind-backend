@@ -21,6 +21,10 @@ export class NotificationController {
             if (!fcmEntity) {
                 await this.notificationService.createToken(user.id, dto.token)
             }
+            else if (fcmEntity?.user?.id != user?.id) {
+                await this.notificationService.deleteToken(fcmEntity.token)
+                await this.notificationService.createToken(user.id, dto.token)
+            }
         } catch (error) {
             console.log('error', error)
         }
