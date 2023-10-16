@@ -36,7 +36,9 @@ export class MemoService {
             },
             relations: {
                 comments: {
-                    user: true,
+                    user: {
+                        profileImage: true
+                    },
                     likes: {
                         user: true,
                     }
