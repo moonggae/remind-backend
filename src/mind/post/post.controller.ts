@@ -7,6 +7,7 @@ import { MindPost } from './entities/mind-post.entity';
 import { UpdateMindPostDto } from './dto/update-post.dto';
 import { FriendService } from 'src/friend/friend.service';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificationContent } from 'src/notification/models/notification-content';
 
 @Controller('')
 export class PostController {
@@ -20,11 +21,12 @@ export class PostController {
     @Post()
     async create(@CtxUser() user: ContextUser, @Body() createDto: CreateMindPostDto): Promise<MindPost> {
         const post = await this.postService.create(user.id, createDto)
-        this.notificationService.sendNotificationToFriend(user.id, {
-            text: `${user.displayName ? `${user.displayName}님이` : "친구가" } 새로운 감정을 등록했어요.`,
+
+        this.notificationService.sendNotificationToFriend(user.id, new NotificationContent({
             type: "MIND.POST",
-            targetId: `${post.id}`
-        })
+            targetId: `${post.id}`,
+            displayName: user.displayName
+        }))
 
         return post
     }
@@ -70,10 +72,9 @@ export class PostController {
     @Post('/request/friend')
     async requestFriendMind(@CtxUser() user: ContextUser) {
         // todo : 일정 시간 텀으로 요청 or exception 뱉기
-        this.notificationService.sendNotificationToFriend(user.id, {
-            title: "감정 묻기",
-            text: `${user.displayName}님이 현재 감정을 물어봤어요.`,
-            type: "MIND.REQUEST"
-        })
+        this.notificationService.sendNotificationToFriend(user.id, new NotificationContent({
+            type: "MIND.REQUEST",
+            displayName: user.displayName
+        }))
     }
 }

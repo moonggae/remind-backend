@@ -9,6 +9,7 @@ import { FriendService } from 'src/friend/friend.service';
 import { identity } from 'rxjs';
 import { NotificationService } from 'src/notification/notification.service';
 import { MindPostMemo } from './entities/mind-post-memo.entity';
+import { NotificationContent } from 'src/notification/models/notification-content';
 
 @Controller('')
 export class MemoController {
@@ -28,11 +29,11 @@ export class MemoController {
 
         const memo = await this.memoService.create(createMemoDto.postId, createMemoDto.text)
 
-        this.notificationService.sendNotificationToFriend(user.id, {
-            text: `${user.displayName ? `${user.displayName}님이` : "친구가" } 새로운 메모를 작성했어요.`,
+        this.notificationService.sendNotificationToFriend(user.id, new NotificationContent({
             type: "MEMO.POST",
-            targetId: `${memo.id}`
-        })
+            targetId: `${memo.id}`,
+            displayName: user.displayName
+        }))
 
         return memo
     }
@@ -57,11 +58,11 @@ export class MemoController {
         if(!authorized) throw new UnauthorizedException()
         const memo = await this.memoService.update(+id, updateMemoDto.text)
 
-        this.notificationService.sendNotificationToFriend(user.id, {
-            text: `${user.displayName ? `${user.displayName}님이` : "친구가" } 메모를 업데이트 했어요.`,
+        this.notificationService.sendNotificationToFriend(user.id, new NotificationContent({
             type: "MEMO.UPDATE",
-            targetId: `${memo.id}`
-        })
+            targetId: `${memo.id}`,
+            displayName: user.displayName
+        }))
 
         return memo
     }

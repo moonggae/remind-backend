@@ -1,8 +1,9 @@
 import { NotificationContentType } from "./notification-content-type.type";
 
-export interface NotificationOptions {
+export interface INotificationContent {
     title?: string,
     text?: string,
     type?: NotificationContentType,
-    targetId?: string
+    targetId?: string,
+    displayName?: string
 }

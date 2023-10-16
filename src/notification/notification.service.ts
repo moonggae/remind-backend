@@ -5,7 +5,7 @@ import * as path from 'path';
 import { FCMToken } from 'src/notification/entities/fcm-token.entity';
 import { Repository } from 'typeorm';
 import * as admin from 'firebase-admin';
-import { NotificationOptions } from 'src/notification/models/notification-options';
+import { INotificationContent } from 'src/notification/models/notification-content.interface';
 import { FriendService } from 'src/friend/friend.service';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class NotificationService implements OnModuleInit {
         })
     }
 
-    async sendNotification(tokens: string[], options?: NotificationOptions) {
+    async sendNotification(tokens: string[], options?: INotificationContent) {
         const message: MulticastMessage = {
             tokens: tokens,
             notification: {},
@@ -36,8 +36,6 @@ export class NotificationService implements OnModuleInit {
         if(options?.text) message["notification"]["body"] = options.text
         if(options?.type) message["data"]["type"] = options.type
         if(options?.targetId) message["data"]["targetId"] = options.targetId
-
-
 
         const result = await this.app.messaging().sendEachForMulticast(message)
         result.responses.forEach((res, index) => {
@@ -53,14 +51,14 @@ export class NotificationService implements OnModuleInit {
         })
     }
 
-    async sendNotificationToFriend(userId: string, options?: NotificationOptions) {
+    async sendNotificationToFriend(userId: string, options?: INotificationContent) {
         const friend = await this.friendService.findFriend(userId)
         if(!friend) return;
         
         this.sendNotificationToUser(friend.id, options)
     }
 
-    async sendNotificationToUser(userId: string, options?: NotificationOptions) {
+    async sendNotificationToUser(userId: string, options?: INotificationContent) {
         const userTokends = await this.findTokensByUserId(userId)
         if(userTokends.length < 1) return;
 

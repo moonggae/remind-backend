@@ -8,6 +8,7 @@ import { ReadReceivedFriendRequestDto } from './dto/read-received-friend-request
 import { ReadMyFriendRequestDto } from './dto/read-my-friend-request.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NotificationService } from 'src/notification/notification.service';
+import { NotificationContent } from 'src/notification/models/notification-content';
 
 @ApiTags('Friend')
 @Controller('friend')
@@ -75,10 +76,10 @@ export class FriendController {
             receiveUser.id
         )
 
-        this.notificationService.sendNotificationToUser(receiveUser.id, {
-            text: `${user.displayName}님이 친구 요청을 보냈어요.`,
-            type: "FRIEND.REQUEST"
-        })
+        this.notificationService.sendNotificationToUser(receiveUser.id, new NotificationContent({
+            type: "FRIEND.REQUEST",
+            displayName: user.displayName
+        }))
     }
 
     @ApiBearerAuth('access-token')
@@ -135,10 +136,10 @@ export class FriendController {
         }
         await this.friendService.acceptRequest(+requestId);
         
-        this.notificationService.sendNotificationToUser(request.requestUser.id, {
-            text: `${user.displayName}님이 친구 요청을 수락했어요.`,
-            type: "FRIEND.ACCEPT"
-        })
+        this.notificationService.sendNotificationToUser(request.requestUser.id, new NotificationContent({
+            type: "FRIEND.ACCEPT",
+            displayName: user.displayName
+        }))
     }
 
     @ApiBearerAuth('access-token')
