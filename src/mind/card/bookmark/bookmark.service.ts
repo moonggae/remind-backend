@@ -17,7 +17,11 @@ export class BookmarkService {
                 }
             },
             relations: {
-                mindCard: true
+                mindCard: {
+                    tags: {
+                        tag: true
+                    }
+                }
             }
         })
     }
