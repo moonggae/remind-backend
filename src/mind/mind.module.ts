@@ -17,6 +17,7 @@ import { MindPostMemoCommentLike } from './post/memo/comment/like/entities/mind-
 import { MemoModule } from './post/memo/memo.module';
 import { CommentModule } from './post/memo/comment/comment.module';
 import { LikeModule } from './post/memo/comment/like/like.module';
+import { BookmarkModule } from './card/bookmark/bookmark.module';
 
 @Module({
     imports: [
@@ -34,34 +35,45 @@ import { LikeModule } from './post/memo/comment/like/like.module';
             MindPostImage,
             MindPostMemo,
             MindPostMemoComment,
-            MindPostMemoCommentLike
+            MindPostMemoCommentLike,
         ]),
 
-        RouterModule.register([{
-            path: 'mind', children: [
-                { module: CardModule, path: '/' },
-                { module: TagModule, path: '/' },
-                {
-                    module: PostModule,
-                    path: 'post',
-                    children: [
-                        {
-                            module: MemoModule,
-                            path: 'memo',
-                            children: [
-                                {
-                                    module: CommentModule,
-                                    path: 'comment',
-                                    children: [
-                                        { module: LikeModule, path: 'like' }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }])
+        RouterModule.register([
+            {
+                path: 'mind',
+                children: [
+                    {
+                        module: CardModule,
+                        path: 'card',
+                        children: [
+                            {
+                                module: BookmarkModule,
+                                path: 'bookmark'
+                            }
+                        ]
+                    },
+                    { module: TagModule, path: '/' },
+                    {
+                        module: PostModule,
+                        path: 'post',
+                        children: [
+                            {
+                                module: MemoModule,
+                                path: 'memo',
+                                children: [
+                                    {
+                                        module: CommentModule,
+                                        path: 'comment',
+                                        children: [
+                                            { module: LikeModule, path: 'like' }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }])
     ]
 })
 export class MindModule { }
