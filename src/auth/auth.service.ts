@@ -34,12 +34,18 @@ export class AuthService {
     }
 
     async refreshJwtToken(refreshToken: string) {
-        const payload: ContextUser = await this.jwtService.verifyAsync(refreshToken, {
-            secret: constnats.jwtSecret
-        })
-
-        const user = await this.usersService.findOneById(payload.id)
-        return this.createJwtToken(user)
+        try {
+            const payload: ContextUser = await this.jwtService.verifyAsync(refreshToken, {
+                secret: constnats.jwtSecret
+            })
+    
+            const user = await this.usersService.findOneById(payload.id)
+            return this.createJwtToken(user)   
+        } catch (e) {
+            const isExpired = `${e}`.includes("jwt expired");
+            if(isExpired) throw new UnauthorizedException("jwt expired")
+            else throw new UnauthorizedException();
+        }
     }
 
     private async createJwtToken(user: User) {
