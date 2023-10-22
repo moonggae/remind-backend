@@ -1,13 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreateMindPostDto } from './dto/create-post.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { MindPost } from './entities/mind-post.entity';
 import { UpdateMindPostDto } from './dto/update-post.dto';
 import { FriendService } from 'src/friend/friend.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationContent } from 'src/notification/models/notification-content';
+import { PaginationPostDto } from './dto/pagination-post.dto';
 
 @Controller('')
 export class PostController {
@@ -53,6 +54,14 @@ export class PostController {
         }
 
         return this.postService.delete(item.id)
+    }
+
+    @ApiBearerAuth('access-token')
+    @ApiResponse({ type: PaginationPostDto })
+    @Get('/list/:page')
+    async getPostList(@CtxUser() user: ContextUser, @Param("page") page: string | undefined): Promise<PaginationPostDto> {
+        const friend = await this.friendService.findFriend(user.id)
+        return this.postService.paginate([user.id, friend.id], 20, +page ?? 0)
     }
 
     @ApiBearerAuth('access-token')
