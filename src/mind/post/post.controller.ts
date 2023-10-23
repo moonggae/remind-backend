@@ -86,4 +86,12 @@ export class PostController {
             displayName: user.displayName
         }))
     }
+
+    @ApiBearerAuth('access-token')
+    @Get(':id')
+    async getOneById(@CtxUser() user: ContextUser, @Param("id") id: string | undefined): Promise<MindPost | undefined> {
+        const authorized = this.postService.authorize(user.id, { postId: +id })
+        if (!authorized) throw new UnauthorizedException()
+        return await this.postService.findOne(+id)
+    }
 }
