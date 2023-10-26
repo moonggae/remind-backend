@@ -6,18 +6,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MindPostMemoComment } from './entities/mind-post-memo-comment.entity';
 import { PostModule } from '../../post.module';
 import { FriendModule } from 'src/friend/friend.module';
+import { SocketModule } from 'src/socket/socket.module';
 
 @Module({
-  controllers: [CommentController],
-  providers: [CommentService],
-  imports: [
-    LikeModule,
-    TypeOrmModule.forFeature([
-      MindPostMemoComment
-    ]),
+    controllers: [CommentController],
+    providers: [CommentService],
+    imports: [
+        LikeModule,
+        TypeOrmModule.forFeature([
+            MindPostMemoComment
+        ]),
 
-    forwardRef(() => PostModule),
-    FriendModule
-  ]
+        forwardRef(() => PostModule),
+        FriendModule,
+        SocketModule
+    ]
 })
-export class CommentModule {}
+export class CommentModule { }

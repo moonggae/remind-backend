@@ -17,6 +17,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FriendModule } from './friend/friend.module';
 import { NotificationModule } from './notification/notification.module';
+import { AppGateway } from './app.gateway';
+import { SocketModule } from './socket/socket.module';
 
 
 @Module({
@@ -38,9 +40,11 @@ import { NotificationModule } from './notification/notification.module';
     ImageModule,
     FriendModule,
     NotificationModule,
+    SocketModule
   ],
   controllers: [AppController],
-  providers: [AppService, {provide: APP_GUARD, useClass: AuthGuard}],
+  providers: [AppService, {provide: APP_GUARD, useClass: AuthGuard}, AppGateway],
+  exports: [AppGateway],
 })
 export class AppModule implements NestModule {
   constructor(private dataSource: DataSource) { }

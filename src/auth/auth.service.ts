@@ -48,6 +48,19 @@ export class AuthService {
         }
     }
 
+    async verifyAsync(token: string): Promise<User | undefined> {
+        try {
+            const payload: ContextUser = await this.jwtService.verify(token, {
+                secret: constnats.jwtSecret
+            })
+
+            const user = await this.usersService.findOneById(payload.id)
+            return user
+        } catch (e) {
+            return null
+        }
+    }
+
     private async createJwtToken(user: User) {
         const payload: ContextUser = { id: user.id, displayName: user.displayName };
         return {

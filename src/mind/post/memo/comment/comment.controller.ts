@@ -7,6 +7,7 @@ import { PostService } from '../../post.service';
 import { FriendService } from 'src/friend/friend.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationContent } from 'src/notification/models/notification-content';
+import { SocketService } from 'src/socket/socket.service';
 
 @Controller('')
 export class CommentController {
@@ -15,7 +16,8 @@ export class CommentController {
         @Inject(forwardRef(() => PostService))
         private readonly postService: PostService,
         private readonly friendService: FriendService,
-        private readonly notificationService: NotificationService
+        private readonly notificationService: NotificationService,
+        private readonly socketService: SocketService
     ) { }
 
     @ApiBearerAuth('access-token')
@@ -25,11 +27,15 @@ export class CommentController {
         if (!authorized) authorized = await this.friendService.postAuthorize(user.id, { memoId: createCommentDto.memoId })
         if (!authorized) throw new UnauthorizedException()
         const comment = await this.commentService.create(user.id, createCommentDto.memoId, createCommentDto.text)
+
         this.notificationService.sendNotificationToFriend(user.id, new NotificationContent({
             type: "MEMO.COMMENT",
             targetId: `${comment.memo.id}`,
             displayName: user.displayName
         }))
+
+        this.socketService.pushToFriend(user.id, "memo-comment", comment)
+
         return comment
     }
 }
