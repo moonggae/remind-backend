@@ -32,7 +32,6 @@ export class SocketService {
 
     async pushToFriend(myId: string, event: string, data: any) {
         const friendSocket = await this.getFriendSocket(myId)
-        console.log(friendSocket.connected)
         friendSocket?.emit(event, data)
     }
 

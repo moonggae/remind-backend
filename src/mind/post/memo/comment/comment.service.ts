@@ -31,7 +31,9 @@ export class CommentService {
                 likes: {
                     user: true,
                 },
-                user: true,
+                user: {
+                    profileImage: true
+                },
                 memo: true
             }
         })

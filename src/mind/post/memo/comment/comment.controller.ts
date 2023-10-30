@@ -34,7 +34,7 @@ export class CommentController {
             displayName: user.displayName
         }))
 
-        this.socketService.pushToFriend(user.id, "memo-comment", comment)
+        this.socketService.pushToFriend(user.id, "mind-memo-comment", comment)
 
         return comment
     }
