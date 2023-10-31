@@ -38,7 +38,7 @@ export class SocketService {
     private async getFriendSocket(userId: string): Promise<Socket | undefined> {
         const friend = await this.friendService.findFriend(userId)
         if(friend) {
-            return this.clients.find(client => client.user.id == friend.id).socket
+            return this.clients.find(client => client.user.id == friend.id)?.socket
         }
     }
 }
