@@ -8,6 +8,7 @@ import { FriendService } from 'src/friend/friend.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationContent } from 'src/notification/models/notification-content';
 import { SocketService } from 'src/socket/socket.service';
+import { SOCKET_EVENT } from 'src/common/enum/socket-event.enum';
 
 @Controller('')
 export class CommentController {
@@ -34,7 +35,7 @@ export class CommentController {
             displayName: user.displayName
         }))
 
-        this.socketService.pushToFriend(user.id, "mind-memo-comment", comment)
+        this.socketService.pushToFriend(user.id, SOCKET_EVENT.MIND_MEMO_COMMENT, comment)
 
         return comment
     }
