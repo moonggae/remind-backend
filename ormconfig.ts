@@ -11,7 +11,7 @@ export const ormconfig: TypeOrmModuleOptions = {
     database: process.env.DB_DATABASE,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    timezone: 'Asia/Seoul',
+    timezone: "Z",
     autoLoadEntities: true,
     synchronize: false,
     logging: false,
