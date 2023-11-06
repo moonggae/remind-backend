@@ -62,7 +62,8 @@ export class PostController {
             throw new UnauthorizedException()
         }
 
-        return this.postService.delete(item.id)
+        await this.postService.delete(item.id)
+        this.socketService.pushToFriend(user.id, SOCKET_EVENT.MIND_POST_DELETE, { 'id': item.id })
     }
 
     @ApiBearerAuth('access-token')
