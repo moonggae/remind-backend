@@ -18,6 +18,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection ,OnGateway
 
     async handleConnection(client: Socket) {
         const auth = client.handshake.auth["authorization"] as string // "Bearer"
+        console.log(`handleConnection - auth: ${auth}`)
         const splitedAuthString = auth.split(' ')
         if(splitedAuthString[0] == "Bearer") {
             const token = splitedAuthString[1]
@@ -27,10 +28,13 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection ,OnGateway
                     user: user,
                     socket: client
                 })
+                console.log(`handleConnection: addClient`)
             } else {
+                console.log('handleConnection: not found user')
                 client.disconnect(true)
             }
         } else {
+            console.log('handleConnection: not found token')
             client.disconnect(true)
         }
     }

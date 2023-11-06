@@ -1,5 +1,6 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
+import { SOCKET_EVENT } from "src/common/enum/socket-event.enum";
 import { FriendService } from "src/friend/friend.service";
 import { User } from "src/users/entities/user.entity";
 
@@ -30,13 +31,16 @@ export class SocketService {
         this.clients = this.clients.filter(client => client.socket.id != socket.id)
     }
 
-    async pushToFriend(myId: string, event: string, data: any) {
+    async pushToFriend(myId: string, event: SOCKET_EVENT, data: any) {
         const friendSocket = await this.getFriendSocket(myId)
-        friendSocket?.emit(event, data)
+        console.log(`pushToFriend - friendSocket.connected: ${friendSocket?.connected}`)
+        const success = friendSocket?.emit(event, data)
+        console.log(`pushToFriend - success: ${success}`)
     }
 
     private async getFriendSocket(userId: string): Promise<Socket | undefined> {
         const friend = await this.friendService.findFriend(userId)
+        console.log(`getFriendSocket - friend: ${friend}`)
         if(friend) {
             return this.clients.find(client => client.user.id == friend.id)?.socket
         }

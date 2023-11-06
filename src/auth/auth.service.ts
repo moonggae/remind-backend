@@ -57,6 +57,7 @@ export class AuthService {
             const user = await this.usersService.findOneById(payload.id)
             return user
         } catch (e) {
+            console.log(`verifyAsync - error: ${e}`)
             return null
         }
     }

@@ -9,13 +9,16 @@ import { FriendService } from 'src/friend/friend.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationContent } from 'src/notification/models/notification-content';
 import { PaginationPostDto } from './dto/pagination-post.dto';
+import { SocketService } from 'src/socket/socket.service';
+import { SOCKET_EVENT } from 'src/common/enum/socket-event.enum';
 
 @Controller('')
 export class PostController {
     constructor(
         private readonly postService: PostService,
         private readonly friendService: FriendService,
-        private readonly notificationService: NotificationService
+        private readonly notificationService: NotificationService,
+        private readonly socketService: SocketService
     ) { }
 
     @ApiBearerAuth('access-token')
@@ -29,6 +32,8 @@ export class PostController {
             displayName: user.displayName
         }))
 
+        this.socketService.pushToFriend(user.id, SOCKET_EVENT.MIND_POST, post)
+
         return post
     }
 
@@ -41,7 +46,11 @@ export class PostController {
             throw new UnauthorizedException()
         }
 
-        return this.postService.update(item.id, updateDto)
+        const updatedPost = await this.postService.update(item.id, updateDto)
+
+        this.socketService.pushToFriend(user.id, SOCKET_EVENT.MIND_POST, updatedPost)
+
+        return updatedPost
     }
 
     @ApiBearerAuth('access-token')
