@@ -1,11 +1,11 @@
-import { Controller, Get, Body, Patch } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { UpdateUserDisplayNameDto } from './dto/update-user-display-name.dto';
 import { ReadUserDisplayNameDto } from './dto/read-user-display-name.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
-import { ReadUserProfileDto } from './dto/read-user-profile.dto';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -29,13 +29,23 @@ export class UsersController {
 
     @ApiBearerAuth('access-token')
     @Get('profile')
-    async getProfile(@CtxUser() user: ContextUser): Promise<ReadUserProfileDto> {
+    async getProfile(@CtxUser() user: ContextUser): Promise<User> {
         const userEntity = await this.usersService.findOneById(user.id)
-        return {
-            displayName: userEntity.displayName,
-            profileImage: userEntity.profileImage,
-            inviteCode: userEntity.inviteCode
-        }
+        return userEntity
+    }
+
+    @ApiBearerAuth('access-token')
+    @Get(':id')
+    async getUser(@CtxUser() user: ContextUser, @Param('id') id: string): Promise<User> {
+        const userEntity = await this.usersService.findOneById(id)
+        return userEntity
+    }
+
+    @ApiBearerAuth('access-token')
+    @Get('inviteCode/:inviteCode')
+    async getUserByInviteCode(@Param('inviteCode') inviteCode: string): Promise<User> {
+        const user = await this.usersService.findByInviteCode(inviteCode)
+        return user
     }
 
     @ApiBearerAuth('access-token')

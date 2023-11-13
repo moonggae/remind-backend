@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, BadRequestException, ConflictException, Inject, forwardRef } from '@nestjs/common';
 import { FriendService } from './friend.service';
 import { UsersService } from 'src/users/users.service';
-import { ReadUserProfileDto } from 'src/users/dto/read-user-profile.dto';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { FriendRequest } from './entities/friend.request.entity';
 import { ReadReceivedFriendRequestDto } from './dto/read-received-friend-request.dto';
@@ -9,6 +8,7 @@ import { ReadMyFriendRequestDto } from './dto/read-my-friend-request.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationContent } from 'src/notification/models/notification-content';
+import { User } from 'src/users/entities/user.entity';
 
 @ApiTags('Friend')
 @Controller('friend')
@@ -24,27 +24,10 @@ export class FriendController {
     ) { }
 
     @ApiBearerAuth('access-token')
-    @ApiResponse({ type: ReadUserProfileDto })
     @Get('')
-    async findFriend(@CtxUser() user: ContextUser): Promise<ReadUserProfileDto> {
+    async findFriend(@CtxUser() user: ContextUser): Promise<User> {
         const friend = await this.friendService.findFriend(user.id)
-        return {
-            inviteCode: friend.inviteCode,
-            displayName: friend.displayName,
-            profileImage: friend.profileImage
-        }
-    }
-
-    @ApiBearerAuth('access-token')
-    @ApiResponse({ type: ReadUserProfileDto })
-    @Get('user/:inviteCode')
-    async findUserProfileByInviteCode(@Param('inviteCode') inviteCode: string): Promise<ReadUserProfileDto> {
-        const user = await this.userService.findByInviteCode(inviteCode)
-        return {
-            inviteCode: user.inviteCode,
-            displayName: user.displayName,
-            profileImage: user.profileImage
-        }
+        return friend
     }
 
     @ApiBearerAuth('access-token')

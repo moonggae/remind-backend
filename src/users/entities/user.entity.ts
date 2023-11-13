@@ -16,7 +16,6 @@ export class User {
 
     @ApiProperty()
     @Column('varchar', { unique: true, nullable: false, length: 255 })
-    @Exclude({ toPlainOnly: true })
     uid: string;
 
     @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
