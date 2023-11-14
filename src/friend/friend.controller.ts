@@ -134,4 +134,13 @@ export class FriendController {
         }
         await this.friendService.denyRequest(+requestId);
     }
+
+    @ApiBearerAuth('access-token')
+    @Delete('')
+    async deleteFriend(@CtxUser() user: ContextUser) {
+        const reuslt = await this.friendService.deleteFriend(user.id)
+        if(reuslt == false) {
+            throw new BadRequestException()
+        }
+    }
 }

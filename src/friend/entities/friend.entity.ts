@@ -9,7 +9,7 @@ export class Friend extends CreatedAt(DeletedAt(EmptyClass)) {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => FriendRequest, (request) => request.id, { nullable: false })
+    @ManyToOne(() => FriendRequest, (request) => request.id, { nullable: false, cascade: true })
     @JoinColumn({ name: 'friend_request_id' })
     acceptedFriendRequest: FriendRequest;
 }

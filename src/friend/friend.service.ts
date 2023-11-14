@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { FriendRequest } from './entities/friend.request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Friend } from './entities/friend.entity';
 import { User } from 'src/users/entities/user.entity';
 import { AuthorizeOptions } from 'src/auth/entities/authorize-options';
@@ -135,5 +135,37 @@ export class FriendService {
         await this.requestRepository.softDelete({
             id: requestId
         })
+    }
+
+    async deleteFriend(userId: string): Promise<boolean> {
+        let success: boolean = false
+
+        const friendEntity: Friend | undefined = await this.friendRepository.findOne({
+            withDeleted: true,
+            where: [
+                {
+                    acceptedFriendRequest: {
+                        receiveUser: { id: userId },
+                        deletedAt: Not(IsNull())
+                    },
+                    deletedAt: IsNull()
+                },
+                {
+                    acceptedFriendRequest: {
+                        requestUser: { id: userId },
+                        deletedAt: Not(IsNull())
+                    },
+                    deletedAt: IsNull()
+                }
+            ]
+        })
+
+        try {
+            const result = await this.friendRepository.softDelete({ id: friendEntity.id })
+            console.log(result)
+            success = result.affected != null && result.affected > 0
+        } catch(e) { console.log(e) }
+
+        return success
     }
 }
