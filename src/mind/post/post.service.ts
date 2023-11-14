@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMindPostDto } from './dto/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, FindOptionsRelations, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsRelations, FindOptionsWhere, Repository } from 'typeorm';
 import { MindPost } from './entities/mind-post.entity';
 import { MindPostCard } from './entities/mind-post-card.entity';
 import { MindPostImage } from './entities/mind-post-image.entity';
@@ -51,7 +51,7 @@ export class PostService {
             images: images,
             memo: memo,
         })
-        return this.findOne(createdPost.id);
+        return this.findLastOne(createdPost.id);
     }
 
     async update(id: number, updateDto: UpdateMindPostDto): Promise<MindPost> {
@@ -63,7 +63,7 @@ export class PostService {
             id, cards, images, memo
         })
 
-        return this.findOne(updatedPost.id);
+        return this.findLastOne(updatedPost.id);
     }
 
     async delete(id: number) {
@@ -72,7 +72,7 @@ export class PostService {
 
     async paginate(userIds: string[], offset: number, page: number) {
         const [posts, total] = await this.postRepository.findAndCount({
-            where: userIds.map(id => ({ user: { id } })),
+            where: userIds.filter(id => id != null).map(id => ({ user: { id } })),
             relations: mindPostRelations,
             take: offset,
             skip: (page) * offset,
@@ -86,17 +86,37 @@ export class PostService {
         }
     }
 
-    async findOne(id?: number, userId?: string) {
-        return await this.postRepository.findOne({
-            where: {
+    async findLastOne(id?: number, userId?: string) {
+        let whereQuery: FindOptionsWhere<MindPost> | FindOptionsWhere<MindPost>[]
+
+        if(id != null && userId != null) {
+            whereQuery = {
                 id: id,
                 user: {
                     id: userId
                 }
-            },
+            }
+        } else if(id != null) {
+            whereQuery = {
+                id: id
+            }
+        } else if(userId != null) {
+            whereQuery = {
+                user: {
+                    id: userId
+                }
+            }
+        } else { return null }
+
+        const resultArray = await this.postRepository.find({
+            withDeleted: false,
+            where: whereQuery,
             relations: mindPostRelations,
-            order: { id: 'DESC' }
+            take: 1,
+            order: { id: 'DESC' },
         })
+
+        return resultArray.length > 0 ? resultArray[0] : null
     }
 
     async authorize(

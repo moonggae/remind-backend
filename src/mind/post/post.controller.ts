@@ -40,7 +40,7 @@ export class PostController {
     @ApiBearerAuth('access-token')
     @Put(':id')
     async update(@CtxUser() user: ContextUser, @Param('id') id: String, @Body() updateDto: UpdateMindPostDto): Promise<MindPost> {
-        const item = await this.postService.findOne(+id, user.id)
+        const item = await this.postService.findLastOne(+id, user.id)
 
         if (!item) {
             throw new UnauthorizedException()
@@ -56,7 +56,7 @@ export class PostController {
     @ApiBearerAuth('access-token')
     @Delete(':id')
     async delete(@CtxUser() user: ContextUser, @Param('id') id: String) {
-        const item = await this.postService.findOne(+id, user.id)
+        const item = await this.postService.findLastOne(+id, user.id)
 
         if (!item) {
             throw new UnauthorizedException()
@@ -71,20 +71,21 @@ export class PostController {
     @Get('/list/:page')
     async getPostList(@CtxUser() user: ContextUser, @Param("page") page: string | undefined): Promise<PaginationPostDto> {
         const friend = await this.friendService.findFriend(user.id)
-        return this.postService.paginate([user.id, friend.id], 20, +page ?? 0)
+        return this.postService.paginate([user.id, friend?.id], 20, +page ?? 0)
     }
 
     @ApiBearerAuth('access-token')
     @Get('/last/friend')
     async getLastFriendPost(@CtxUser() user: ContextUser) {
         const friend = await this.friendService.findFriend(user.id)
-        return this.postService.findOne(null, friend.id)
+        const post = await this.postService.findLastOne(null, friend?.id)
+        return post
     }
 
     @ApiBearerAuth('access-token')
     @Get('/last')
     async getLast(@CtxUser() user: ContextUser) {
-        return this.postService.findOne(null, user.id)
+        return this.postService.findLastOne(null, user.id)
     }
 
     @ApiBearerAuth('access-token')
@@ -102,6 +103,6 @@ export class PostController {
     async getOneById(@CtxUser() user: ContextUser, @Param("id") id: string | undefined): Promise<MindPost | undefined> {
         const authorized = this.postService.authorize(user.id, { postId: +id })
         if (!authorized) throw new UnauthorizedException()
-        return await this.postService.findOne(+id)
+        return await this.postService.findLastOne(+id)
     }
 }
