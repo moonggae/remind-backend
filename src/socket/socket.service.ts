@@ -38,11 +38,22 @@ export class SocketService {
         console.log(`pushToFriend - success: ${success}`)
     }
 
+    async pushToUser(userId: string, event: SOCKET_EVENT, data: any) {
+        const userSocket = await this.getUserSocket(userId)
+        console.log(`pushToUser - userSocket.connected: ${userSocket?.connected}`)
+        const success = userSocket?.emit(event, data)
+        console.log(`pushToUser - success: ${success}`)
+    }
+
     private async getFriendSocket(userId: string): Promise<Socket | undefined> {
         const friend = await this.friendService.findFriend(userId)
         console.log(`getFriendSocket - friend: ${friend}`)
-        if(friend) {
-            return this.clients.find(client => client.user.id == friend.id)?.socket
+        if(friend?.id != null) {
+            return this.getUserSocket(friend?.id)
         }
+    }
+
+    private async getUserSocket(userId: string): Promise<Socket | undefined> {
+        return this.clients.find(client => client.user.id == userId)?.socket
     }
 }

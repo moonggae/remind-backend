@@ -9,6 +9,8 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationContent } from 'src/notification/models/notification-content';
 import { User } from 'src/users/entities/user.entity';
+import { SocketService } from 'src/socket/socket.service';
+import { SOCKET_EVENT } from 'src/common/enum/socket-event.enum';
 
 @ApiTags('Friend')
 @Controller('friend')
@@ -16,11 +18,10 @@ export class FriendController {
     constructor(
         @Inject(forwardRef(() => FriendService))
         private readonly friendService: FriendService,
-
         @Inject(forwardRef(() => UsersService))
         private readonly userService: UsersService,
-
-        private readonly notificationService: NotificationService
+        private readonly notificationService: NotificationService,
+        private readonly socketService: SocketService
     ) { }
 
     @ApiBearerAuth('access-token')
@@ -73,11 +74,7 @@ export class FriendController {
         return requests.map(request => {
             return {
                 id: request.id,
-                requestUser: {
-                    displayName: request.requestUser.displayName,
-                    profileImage: request.requestUser.profileImage,
-                    inviteCode: request.requestUser.inviteCode
-                }
+                requestUser: request.requestUser
             }
         })
     }
@@ -90,11 +87,7 @@ export class FriendController {
         return requests.map(request => {
             return {
                 id: request.id,
-                receivedUser: {
-                    displayName: request.receiveUser.displayName,
-                    profileImage: request.receiveUser.profileImage,
-                    inviteCode: request.receiveUser.inviteCode
-                }
+                receivedUser: request.receiveUser
             }
         })
     }
@@ -118,6 +111,12 @@ export class FriendController {
             throw new BadRequestException();
         }
         await this.friendService.acceptRequest(+requestId);
+
+        this.socketService.pushToUser(
+            request.receiveUser.id,
+            SOCKET_EVENT.FRIEND,
+            request.requestUser
+        )
         
         this.notificationService.sendNotificationToUser(request.requestUser.id, new NotificationContent({
             type: "FRIEND.ACCEPT",
@@ -138,9 +137,15 @@ export class FriendController {
     @ApiBearerAuth('access-token')
     @Delete('')
     async deleteFriend(@CtxUser() user: ContextUser) {
-        const reuslt = await this.friendService.deleteFriend(user.id)
-        if(reuslt == false) {
+        const friend = await this.friendService.findFriend(user.id)
+        const result = await this.friendService.deleteFriend(user.id)
+        if(result == false) {
             throw new BadRequestException()
         }
+        this.socketService.pushToUser(
+            friend.id,
+            SOCKET_EVENT.FRIEND,
+            null
+        )
     }
 }

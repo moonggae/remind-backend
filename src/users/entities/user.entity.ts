@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Image } from "src/image/entities/image.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, FindOptionsRelations, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 enum LOGIN_TYPE {
     KAKAO = 'KAKAO',
@@ -39,4 +39,8 @@ export class User {
     @ApiProperty()
     @Column('char', { nullable: false, length: 6 })
     inviteCode: string;
+
+    static relation: FindOptionsRelations<User> = {
+        profileImage: true
+    }
 }
