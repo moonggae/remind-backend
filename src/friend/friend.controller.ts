@@ -113,9 +113,9 @@ export class FriendController {
         await this.friendService.acceptRequest(+requestId);
 
         this.socketService.pushToUser(
-            request.receiveUser.id,
+            request.requestUser.id,
             SOCKET_EVENT.FRIEND,
-            request.requestUser
+            request.receiveUser
         )
         
         this.notificationService.sendNotificationToUser(request.requestUser.id, new NotificationContent({

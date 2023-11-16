@@ -32,10 +32,10 @@ export class SocketService {
     }
 
     async pushToFriend(myId: string, event: SOCKET_EVENT, data: any) {
-        const friendSocket = await this.getFriendSocket(myId)
-        console.log(`pushToFriend - friendSocket.connected: ${friendSocket?.connected}`)
-        const success = friendSocket?.emit(event, data)
-        console.log(`pushToFriend - success: ${success}`)
+        const friend = await this.friendService.findFriend(myId)
+        if(friend?.id != null) {
+            this.pushToUser(friend.id, event, data)
+        }
     }
 
     async pushToUser(userId: string, event: SOCKET_EVENT, data: any) {
@@ -43,6 +43,7 @@ export class SocketService {
         console.log(`pushToUser - userSocket.connected: ${userSocket?.connected}`)
         const success = userSocket?.emit(event, data)
         console.log(`pushToUser - success: ${success}`)
+        console.log(`userId: ${userId}, evnet: ${event}, data: ${data}`)
     }
 
     private async getFriendSocket(userId: string): Promise<Socket | undefined> {
