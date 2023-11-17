@@ -114,7 +114,7 @@ export class FriendController {
 
         this.socketService.pushToUser(
             request.requestUser.id,
-            SOCKET_EVENT.FRIEND,
+            SOCKET_EVENT.FRIEND_ACCEPT,
             request.receiveUser
         )
         
@@ -144,8 +144,8 @@ export class FriendController {
         }
         this.socketService.pushToUser(
             friend.id,
-            SOCKET_EVENT.FRIEND,
-            null
+            SOCKET_EVENT.FRIEND_DELETE,
+            user.id
         )
     }
 }
