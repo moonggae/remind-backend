@@ -23,7 +23,7 @@ const mindPostRelations: FindOptionsRelations<MindPost> = {
         image: true
     },
     memo: {
-        comments: {
+        comments: { // todo : read 권한 관리 - me, friend, others 고려
             user: true,
             likes: {
                 user: true
@@ -147,4 +147,20 @@ export class PostService {
             return false
         }
     }
+
+    filterComments(post: MindPost, userIds: string[]): MindPost { // todo
+        post.memo.comments = post.memo.comments
+            .filter(comment => userIds.includes(comment.user.id))
+            .map(comment => {
+                comment.likes = comment.likes.filter(like => userIds.includes(like.user.id))
+                return comment
+            })
+
+        return post
+    }
+
+    filterPostsCommnets(posts: MindPost[], userIds: string[]): MindPost[] { // todo
+        return posts.map(post => this.filterComments(post, userIds))
+    }
+
 }
