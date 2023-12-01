@@ -16,12 +16,16 @@ export class AuthService {
     ) { }
 
 
-    async getKakaoUserUid(accessToken: String): Promise<string> {
-        const kakaoUser = await firstValueFrom(
-            this.httpService.get('https://kapi.kakao.com/v2/user/me', {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            }))
-        return kakaoUser.data.id
+    async getKakaoUserUid(accessToken: String): Promise<string | undefined> {
+        try {
+            const kakaoUser = await firstValueFrom(
+                this.httpService.get('https://kapi.kakao.com/v2/user/me', {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                }))
+            return kakaoUser?.data?.id
+        } catch (error) {
+            return null
+        }
     }
 
     async signIn(uid: string, loginType: LOGIN_TYPE) {
@@ -38,12 +42,12 @@ export class AuthService {
             const payload: ContextUser = await this.jwtService.verifyAsync(refreshToken, {
                 secret: constnats.jwtSecret
             })
-    
+
             const user = await this.usersService.findOneById(payload.id)
-            return this.createJwtToken(user)   
+            return this.createJwtToken(user)
         } catch (e) {
             const isExpired = `${e}`.includes("jwt expired");
-            if(isExpired) throw new UnauthorizedException("jwt expired")
+            if (isExpired) throw new UnauthorizedException("jwt expired")
             else throw new UnauthorizedException();
         }
     }

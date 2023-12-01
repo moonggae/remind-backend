@@ -1,4 +1,4 @@
-import { Controller, Post, Body, BadRequestException, Req } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin.dto';
 import { Public } from 'src/common/dacorator/public.decorator';
@@ -21,7 +21,8 @@ export class AuthController {
     @Public()
     @Post('login/kakao')
     async signInKakao(@Body() signInKakaoDto: SignInKakaoDto) {
-        const kakaoUid: string = await this.authService.getKakaoUserUid(signInKakaoDto.accessToken)
+        const kakaoUid: string | null = await this.authService.getKakaoUserUid(signInKakaoDto.accessToken)
+        if(!kakaoUid) throw new UnauthorizedException() // todo test
         return await this.authService.signIn(kakaoUid, LOGIN_TYPE.KAKAO)
     }
 
