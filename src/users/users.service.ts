@@ -4,11 +4,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { LOGIN_TYPE } from 'src/common/enum/login-type.enum';
-import { FCMToken } from '../notification/entities/fcm-token.entity';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
+    constructor(
+        @InjectRepository(User) private userRepository: Repository<User>,
+        private readonly httpService: HttpService,
+        private readonly configService: ConfigService
+    ) { }
 
     async create(createUserDto: CreateUserDto) {
         const createUser = await this.userRepository.create(createUserDto);
@@ -57,9 +63,40 @@ export class UsersService {
                     inviteCode: randomCode
                 }
             });
-            if(isCodeConflit == false) {
+            if (isCodeConflit == false) {
                 return randomCode
             }
         } while (isCodeConflit);
+    }
+
+    async deleteUser(userId: string) {
+        await this.userRepository.softDelete({ id: userId })
+    }
+
+    async unlinkKakaoUser(kakaoUserId: number): Promise<Boolean> {
+        try {
+            const response = await firstValueFrom(
+                this.httpService.post(
+                    'https://kapi.kakao.com/v1/user/unlink', {
+                        target_id_type: "user_id",
+                        target_id: kakaoUserId
+                    }, {
+                        headers: { 
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Authorization': `KakaoAK ${this.configService.get("KAKAO_ADMIN_KEY")}` 
+                        } 
+                    }
+                )
+            )
+    
+            if(response?.data?.id == kakaoUserId) {
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            console.log(error)
+            return false
+        }
     }
 }

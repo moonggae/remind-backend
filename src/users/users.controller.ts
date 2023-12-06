@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CtxUser } from 'src/common/dacorator/context-user.decorator';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
@@ -6,6 +6,9 @@ import { UpdateUserDisplayNameDto } from './dto/update-user-display-name.dto';
 import { ReadUserDisplayNameDto } from './dto/read-user-display-name.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { User } from './entities/user.entity';
+import { LOGIN_TYPE } from 'src/common/enum/login-type.enum';
+import { Public } from 'src/common/dacorator/public.decorator';
+import { NotFoundError } from 'rxjs';
 
 @Controller('users')
 export class UsersController {
@@ -57,5 +60,20 @@ export class UsersController {
         if(`${updateUserProfileDto.profileImageId}`.trim().length > 0) {
             await this.usersService.updateProfileImage(user.id, updateUserProfileDto.profileImageId)
         }
+    }
+
+    // @Public()
+    @ApiBearerAuth('access-token')
+    @Delete(':loginType')
+    async deleteUser(@CtxUser() user: ContextUser, @Param('loginType') loginType: LOGIN_TYPE) {
+        if(loginType != LOGIN_TYPE.KAKAO) throw new NotFoundException()
+
+        const userEntity = await this.usersService.findOneById(user?.id)
+        if(!userEntity) throw new BadRequestException()
+
+        const kakaoUnlinkDone = await this.usersService.unlinkKakaoUser(+userEntity.uid)
+        if(!kakaoUnlinkDone) throw new BadRequestException()
+
+        await this.usersService.deleteUser(user.id)
     }
 }

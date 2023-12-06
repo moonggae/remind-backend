@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
+import { DeletedAt } from "src/common/entity-base/deleted_at.abstract";
+import { EmptyClass } from "src/common/entity-base/empty-class";
 import { Image } from "src/image/entities/image.entity";
 import { Column, CreateDateColumn, Entity, FindOptionsRelations, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -10,12 +12,12 @@ enum LOGIN_TYPE {
 }
 
 @Entity()
-export class User {
+export class User extends DeletedAt(EmptyClass) {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @ApiProperty()
-    @Column('varchar', { unique: true, nullable: false, length: 255 })
+    @Column('varchar', { unique: false, nullable: false, length: 255 })
     uid: string;
 
     @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
