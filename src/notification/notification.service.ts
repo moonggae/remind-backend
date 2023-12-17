@@ -32,8 +32,8 @@ export class NotificationService implements OnModuleInit {
             data: {}
         }
 
-        if(options?.title) message["notification"]["title"] = options.title
-        if(options?.text) message["notification"]["body"] = options.text
+        if(options?.title) message["data"]["title"] = options.title
+        if(options?.text) message["data"]["body"] = options.text
         if(options?.type) message["data"]["type"] = options.type
         if(options?.targetId) message["data"]["targetId"] = options.targetId
 
