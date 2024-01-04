@@ -37,3 +37,6 @@ lerna-debug.log*
 
 file/*
 !/file/*.svg
+.env
+/secrets
+/static
