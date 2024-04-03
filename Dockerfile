@@ -1,4 +1,4 @@
-FROM node:18.17.1 AS builder
+FROM node:20.12.0 AS builder
 
 WORKDIR /app
 COPY . .
@@ -6,7 +6,7 @@ COPY . .
 RUN yarn
 RUN yarn run build
 
-FROM node:18.17.1
+FROM node:20.12.0
 WORKDIR /usr/src/app
 COPY --from=builder /app ./
 
